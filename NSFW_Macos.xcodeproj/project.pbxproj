@@ -11,6 +11,7 @@
 		5BE34CE62BD6883200522E99 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE34CE52BD6883200522E99 /* ContentView.swift */; };
 		5BE34CE82BD6883200522E99 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5BE34CE72BD6883200522E99 /* Assets.xcassets */; };
 		5BE34CEB2BD6883200522E99 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5BE34CEA2BD6883200522E99 /* Preview Assets.xcassets */; };
+		5BE34CF32BD6884700522E99 /* NSFW.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = 5BE34CF22BD6884700522E99 /* NSFW.mlmodel */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		5BE34CE72BD6883200522E99 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5BE34CEA2BD6883200522E99 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5BE34CEC2BD6883200522E99 /* NSFW_Macos.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = NSFW_Macos.entitlements; sourceTree = "<group>"; };
+		5BE34CF22BD6884700522E99 /* NSFW.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = NSFW.mlmodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 			children = (
 				5BE34CE32BD6883200522E99 /* NSFW_MacosApp.swift */,
 				5BE34CE52BD6883200522E99 /* ContentView.swift */,
+				5BE34CF22BD6884700522E99 /* NSFW.mlmodel */,
 				5BE34CE72BD6883200522E99 /* Assets.xcassets */,
 				5BE34CEC2BD6883200522E99 /* NSFW_Macos.entitlements */,
 				5BE34CE92BD6883200522E99 /* Preview Content */,
@@ -141,6 +144,7 @@
 			files = (
 				5BE34CE62BD6883200522E99 /* ContentView.swift in Sources */,
 				5BE34CE42BD6883200522E99 /* NSFW_MacosApp.swift in Sources */,
+				5BE34CF32BD6884700522E99 /* NSFW.mlmodel in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
