@@ -89,10 +89,11 @@ private extension NSFWDetector {
 }
 
 import SwiftUI
+import AppKit
 
 struct ContentView: View {
     @State private var results: [NSFWCheckResult] = []
-    @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
+    @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
     
@@ -107,25 +108,39 @@ struct ContentView: View {
                 }
                 .padding()
             }
-            
-            
-            List(results, id: \.filename) { result in
-                HStack {
-                    if let image = NSImage(contentsOfFile: "\(inputPath)/\(result.filename)") {
-                        Button(action: {
-                            NSWorkspace.shared.selectFile("\(inputPath)/\(result.filename)", inFileViewerRootedAtPath: inputPath)
-                        }) {
-                            Image(nsImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 100, height: 100)
+
+//            Text("NSFW Detection Results")
+//                .font(.headline)
+//                .padding()
+//            
+            List {
+                ForEach(results, id: \.filename) { result in
+                    HStack {
+                        if let image = NSImage(contentsOfFile: "\(inputPath)/\(result.filename)") {
+                            Button(action: {
+                                NSWorkspace.shared.selectFile("\(inputPath)/\(result.filename)", inFileViewerRootedAtPath: inputPath)
+                            }) {
+                                Image(nsImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 100, height: 100)
+                            }
                         }
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text("File: \(result.filename)")
-                        Text("Confidence: \(result.confidence * 100, specifier: "%.1f")%")
-                            .foregroundColor(result.confidence > 0.5 ? .red : .green)
+                        
+                        VStack(alignment: .leading) {
+                            Text("File: \(result.filename)")
+                            Text("Confidence: \(result.confidence * 100, specifier: "%.1f")%")
+                                .foregroundColor(result.confidence > 0.5 ? .red : .green)
+                        }
+
+                        Spacer()
+
+                        Button(action: {
+                            deleteImage(result: result)
+                        }) {
+                            Text("Delete")
+                                .foregroundColor(.red)
+                        }
                     }
                 }
             }
@@ -133,7 +148,7 @@ struct ContentView: View {
     }
     
     private func loadAndCheckImages() {
-        DispatchQueue.global(qos: .userInitiated).async { // 使用后台线程
+        DispatchQueue.global(qos: .userInitiated).async {
             let fileManager = FileManager.default
             guard let items = try? fileManager.contentsOfDirectory(atPath: self.inputPath) else {
                 return
@@ -143,7 +158,7 @@ struct ContentView: View {
                 let fullPath = "\(self.inputPath)/\(item)"
                 if let image = NSImage(contentsOfFile: fullPath) {
                     NSFWDetector.shared.check(image: image) { result in
-                        DispatchQueue.main.async { // 在主线程更新UI
+                        DispatchQueue.main.async {
                             switch result {
                             case .error(let error):
                                 print("Detection failed for \(item): \(error.localizedDescription)")
@@ -157,14 +172,26 @@ struct ContentView: View {
             }
         }
     }
-    
-    
+
     /// Inserts a new result in sorted order into the results array
     private func insertSorted(result: NSFWCheckResult) {
         let index = results.firstIndex { $0.confidence < result.confidence } ?? results.count
         results.insert(result, at: index)
     }
+
+    /// Function to delete the selected image from the filesystem and update the UI
+    private func deleteImage(result: NSFWCheckResult) {
+        guard let index = results.firstIndex(where: { $0.filename == result.filename }) else { return }
+        let fullPath = "\(inputPath)/\(result.filename)"
+        do {
+            try FileManager.default.removeItem(atPath: fullPath)
+            results.remove(at: index)
+        } catch {
+            print("Failed to delete file: \(error)")
+        }
+    }
 }
+
 
 
 
