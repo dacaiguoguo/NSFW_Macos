@@ -133,28 +133,31 @@ struct ContentView: View {
     }
     
     private func loadAndCheckImages() {
-        let fileManager = FileManager.default
-        guard let items = try? fileManager.contentsOfDirectory(atPath: inputPath) else {
-            return
-        }
-        
-        for item in items where item.hasSuffix("png") {
-            let fullPath = "\(inputPath)/\(item)"
-            if let image = NSImage(contentsOfFile: fullPath) {
-                NSFWDetector.shared.check(image: image) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .error(let error):
-                            print("Detection failed for \(item): \(error.localizedDescription)")
-                        case let .success(nsfwConfidence: confidence):
-                            let newResult = NSFWCheckResult(filename: item, confidence: confidence)
-                            self.insertSorted(result: newResult)
+        DispatchQueue.global(qos: .userInitiated).async { // 使用后台线程
+            let fileManager = FileManager.default
+            guard let items = try? fileManager.contentsOfDirectory(atPath: self.inputPath) else {
+                return
+            }
+            
+            for item in items where item.hasSuffix("png") {
+                let fullPath = "\(self.inputPath)/\(item)"
+                if let image = NSImage(contentsOfFile: fullPath) {
+                    NSFWDetector.shared.check(image: image) { result in
+                        DispatchQueue.main.async { // 在主线程更新UI
+                            switch result {
+                            case .error(let error):
+                                print("Detection failed for \(item): \(error.localizedDescription)")
+                            case let .success(nsfwConfidence: confidence):
+                                let newResult = NSFWCheckResult(filename: item, confidence: confidence)
+                                self.insertSorted(result: newResult)
+                            }
                         }
                     }
                 }
             }
         }
     }
+    
     
     /// Inserts a new result in sorted order into the results array
     private func insertSorted(result: NSFWCheckResult) {
