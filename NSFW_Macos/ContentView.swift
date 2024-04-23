@@ -92,24 +92,32 @@ import SwiftUI
 import AppKit
 
 struct ContentView: View {
+    @State private var isDetecting: Bool = false  // 添加一个状态来追踪检测状态
     @State private var results: [NSFWCheckResult] = []
-    @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
+    @State private var inputPath: String = ""
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
     
     var body: some View {
         VStack {
             HStack{
-                TextField("Enter folder path", text: $inputPath)
-                    .padding()
-                
-                Button("Start Detection") {
-                    loadAndCheckImages()
+                Button("Select Folder") {
+                    selectFolder()
                 }
                 .padding()
+                
+                if isDetecting {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                } else {
+                    Button("Start Detection") {
+                        loadAndCheckImages()
+                    }
+                    .disabled(isDetecting || inputPath.isEmpty)  // 当没有选择文件夹或正在检测时禁用按钮
+                }
             }
 
-//            Text("NSFW Detection Results")
+            Text(inputPath)
 //                .font(.headline)
 //                .padding()
 //            
@@ -146,8 +154,20 @@ struct ContentView: View {
             }
         }
     }
+    private func selectFolder() {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+        panel.begin { response in
+            if response == .OK {
+                self.inputPath = panel.url?.path ?? ""
+            }
+        }
+    }
     
     private func loadAndCheckImages() {
+        isDetecting = true  // 开始检测前，设置正在检测的状态为true
         DispatchQueue.global(qos: .userInitiated).async {
             let fileManager = FileManager.default
             guard let items = try? fileManager.contentsOfDirectory(atPath: self.inputPath) else {
@@ -169,6 +189,9 @@ struct ContentView: View {
                         }
                     }
                 }
+            }
+            DispatchQueue.main.async {
+                self.isDetecting = false  // 检测结束后，设置正在检测的状态为false
             }
         }
     }
