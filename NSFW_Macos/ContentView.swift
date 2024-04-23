@@ -93,6 +93,8 @@ import SwiftUI
 struct ContentView: View {
     @State private var results: [NSFWCheckResult] = []
     @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
+    // "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
+    // "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
     
     var body: some View {
         VStack {
@@ -105,15 +107,19 @@ struct ContentView: View {
                 }
                 .padding()
             }
-
+            
             
             List(results, id: \.filename) { result in
                 HStack {
                     if let image = NSImage(contentsOfFile: "\(inputPath)/\(result.filename)") {
-                        Image(nsImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .frame(width: 100, height: 100)
+                        Button(action: {
+                            NSWorkspace.shared.selectFile("\(inputPath)/\(result.filename)", inFileViewerRootedAtPath: inputPath)
+                        }) {
+                            Image(nsImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 100, height: 100)
+                        }
                     }
                     
                     VStack(alignment: .leading) {
@@ -149,7 +155,7 @@ struct ContentView: View {
             }
         }
     }
-
+    
     /// Inserts a new result in sorted order into the results array
     private func insertSorted(result: NSFWCheckResult) {
         let index = results.firstIndex { $0.confidence < result.confidence } ?? results.count
