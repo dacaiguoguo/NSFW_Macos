@@ -88,20 +88,28 @@ private extension NSFWDetector {
     }
 }
 
+import SwiftUI
 
 struct ContentView: View {
     @State private var results: [NSFWCheckResult] = []
-    let path = "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
+    @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
     
     var body: some View {
         VStack {
-            Text("NSFW Detection Results")
-                .font(.headline)
+            HStack{
+                TextField("Enter folder path", text: $inputPath)
+                    .padding()
+                
+                Button("Start Detection") {
+                    loadAndCheckImages()
+                }
                 .padding()
+            }
+
             
             List(results, id: \.filename) { result in
                 HStack {
-                    if let image = NSImage(contentsOfFile: "\(path)/\(result.filename)") {
+                    if let image = NSImage(contentsOfFile: "\(inputPath)/\(result.filename)") {
                         Image(nsImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -115,37 +123,17 @@ struct ContentView: View {
                     }
                 }
             }
-            .onAppear(perform: loadAndCheckImages)
         }
     }
     
-    private func loadAndCheckImages2() {
-        let fileManager = FileManager.default
-        guard let items = try? fileManager.contentsOfDirectory(atPath: path) else { return }
-        
-        for item in items where item.hasSuffix("png") {
-            let fullPath = "\(path)/\(item)"
-            if let image = NSImage(contentsOfFile: fullPath) {
-                NSFWDetector.shared.check(image: image) { result in
-                    DispatchQueue.main.async {
-                        switch result {
-                        case .error(let error):
-                            print("Detection failed for \(item): \(error.localizedDescription)")
-                        case let .success(nsfwConfidence: confidence):
-                            let result = NSFWCheckResult(filename: item, confidence: confidence)
-                            results.append(result)
-                        }
-                    }
-                }
-            }
-        }
-    }
     private func loadAndCheckImages() {
         let fileManager = FileManager.default
-        guard let items = try? fileManager.contentsOfDirectory(atPath: path) else { return }
+        guard let items = try? fileManager.contentsOfDirectory(atPath: inputPath) else {
+            return
+        }
         
         for item in items where item.hasSuffix("png") {
-            let fullPath = "\(path)/\(item)"
+            let fullPath = "\(inputPath)/\(item)"
             if let image = NSImage(contentsOfFile: fullPath) {
                 NSFWDetector.shared.check(image: image) { result in
                     DispatchQueue.main.async {
@@ -167,9 +155,7 @@ struct ContentView: View {
         let index = results.firstIndex { $0.confidence < result.confidence } ?? results.count
         results.insert(result, at: index)
     }
-
 }
-
 
 
 
