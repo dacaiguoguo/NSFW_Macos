@@ -93,7 +93,7 @@ import AppKit
 
 struct ContentView: View {
     @State private var results: [NSFWCheckResult] = []
-    @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
+    @State private var inputPath: String = "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
     
