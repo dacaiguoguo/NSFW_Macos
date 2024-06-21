@@ -94,7 +94,7 @@ import AppKit
 struct ContentView: View {
     @State private var isDetecting: Bool = false  // 添加一个状态来追踪检测状态
     @State private var results: [NSFWCheckResult] = []
-    @State private var inputPath: String = ""
+    @State private var inputPath: String = "/Users/yanguosun/Developer/NSFW_Macos/nsfwtest"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/output-aiphoto"
     // "/Users/yanguosun/Sites/localhost/aiheadshot-report/testaaqaa"
     
